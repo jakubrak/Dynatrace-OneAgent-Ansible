@@ -10,20 +10,27 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      # Checkout the branch
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Update version
+      - name: Update OneAgent Ansible collection version
         uses:  ./.github/actions/update-version
         with:
           version: ${{ github.event.inputs.version}}
           gha_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release on GitHub
+      - name: Release OneAgent Ansible collection on GitHub
         uses:  ./.github/actions/make-release
         with:
           version: ${{ github.event.inputs.version }}
           gha_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release OneAgent Ansible collection on Automation Hub and Ansible Galaxy
+        uses: ansible/ansible-content-actions/.github/workflows/release.yaml@main
+        with:
+          environment: release
+        secrets:
+          ah_token: ${{ secrets.AH_TOKEN }}
+          ansible_galaxy_api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
