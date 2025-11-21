@@ -8,5 +8,3 @@ jobs:
     uses: ansible/ansible-content-actions/.github/workflows/refresh_ah_token.yaml@main
     with:
       environment: release
-    secrets:
-      ah_token: ${{ secrets.AH_TOKEN }}
