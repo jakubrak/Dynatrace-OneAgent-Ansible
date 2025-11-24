@@ -12,29 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Check commits
+name: Update the collection version
 on:
-  pull_request:
-  
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version'
+        required: true
+
 jobs:
-  update:
+  update-version-and-changelog:
+    name: Release on GitHub
     runs-on: ubuntu-latest
     steps:
-      # Checkout the branch
       - name: checkout
+        if: ${{ inputs.github_publish }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check commit messages
-        env:
-          BASE_REF: ${{ github.event.pull_request.base.sha }}
-          HEAD_REF: ${{ github.event.pull_request.head.sha }}
-        run: |
-          echo "Checking commits from $BASE_REF to $HEAD_REF"
-          for COMMIT in $(git rev-list $BASE_REF..$HEAD_REF); do
-            echo "Checking commit $COMMIT"
-            commit_msg_file=$(mktemp)
-            git show --format=%B $COMMIT > ${commit_msg_file}
-            npx git-conventional-commits commit-msg-hook ${commit_msg_file}
-          done
+      - name: Update version
+        if: ${{ inputs.github_publish }}
+        uses:  ./.github/actions/update-version
+        with:
+          version: ${{ github.event.inputs.version }}
+          gha_token: ${{ secrets.GITHUB_TOKEN }}
