@@ -24,65 +24,94 @@ inputs:
 runs:
   using: composite
   steps:
-      - name: Install git-conventional-commits
-        shell: bash
-        run: |
-          npm i git-conventional-commits
+    - name: Generate GitHub App token
+      id: app-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ secrets.APP_ID }}
+        private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Update version in files
-        shell: bash
-        run: |
-          python $GITHUB_WORKSPACE/.github/actions/update-version/update_version.py "$VERSION"
-        env:
-          VERSION: ${{ inputs.version }}
+    - name: Install git-conventional-commits
+      shell: bash
+      run: |
+        npm i git-conventional-commits
 
-      - name: Generate changelog
-        shell: bash
-        run: |
-          npx git-conventional-commits changelog --file CHANGELOG.md --release "$VERSION"
-        env:
-          VERSION: ${{ inputs.version }}
+    - name: Update version in files
+      shell: bash
+      run: |
+        python $GITHUB_WORKSPACE/.github/actions/update-version/update_version.py "$VERSION"
+      env:
+        VERSION: ${{ inputs.version }}
 
-      - name: setup git config
-        shell: bash
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+    - name: Generate changelog
+      shell: bash
+      run: |
+        npx git-conventional-commits changelog --file CHANGELOG.md --release "$VERSION"
+      env:
+        VERSION: ${{ inputs.version }}
 
-      - name: commit
-        shell: bash
-        run: |
-          # Stage the file, commit and push
-          git add galaxy.yml roles/oneagent/vars/version.yml CHANGELOG.md
-          git commit -m "chore: Update version"
-          git push origin HEAD:"$VERSION"
-        env:
-          VERSION: ${{ inputs.version }}
+    - name: Setup git config
+      shell: bash
+      run: |
+        git config user.name  "${{ steps.app-token.outputs.app-slug }}[bot]"
+        git config user.email "${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
 
-      - name: Create Pull Request
-        shell: bash
-        run: |
-          gh pr create --title "Version update: $VERSION" --body "" --head "$VERSION" --base "master"
-          TIMEOUT=600 # 10 minutes in seconds
-          INTERVAL=10 # polling interval in seconds
-          ELAPSED=0
-          PR_URL=""
-          while [ $ELAPSED -lt $TIMEOUT ]; do
-            PR_JSON=$(gh pr list --head "$VERSION" --json url -L 1)
-            PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
-            if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
-              echo "Pull request created: $PR_URL"
-              break
-            fi
-            echo "Waiting for pull request to be created..."
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-          done
-          if [[ -z "$PR_URL" || "$PR_URL" == "null" ]]; then
-            echo "Pull request was not created within timeout."
-            exit 1
+    - name: Commit
+      shell: bash
+      run: |
+        git add galaxy.yml roles/oneagent/vars/version.yml CHANGELOG.md
+        git commit -m "chore: Update the collection version to $VERSION"
+        git push origin HEAD:"$VERSION"
+      env:
+        VERSION: ${{ inputs.version }}
+
+    - name: Create Pull Request
+      shell: bash
+      run: |
+        gh pr create --title "Version update: $VERSION" --body "" --head "$VERSION" --base "master"
+        PR_URL=""
+        for i in {1..60}; do
+          PR_JSON=$(gh pr list --head "$VERSION" --state open --json number,url --jq '.[0]')
+          PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
+          if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
+            echo "Pull request created: $PR_URL"
+            echo "PR_NUMBER=$(echo "$PR_JSON" | jq -r .number)" >> "$GITHUB_ENV"
+            echo "PR_URL=$(echo "$PR_JSON" | jq -r .url)" >> "$GITHUB_ENV"
+            break
           fi
-        env:
-          GH_TOKEN: ${{ inputs.gha_token }}
-          VERSION: ${{ inputs.version }}
+          echo "Waiting for pull request to be created..."
+          sleep 10
+        done
+
+        echo "Pull request was not created within timeout."
+        exit 1
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        VERSION: ${{ inputs.version }}
+
+    - name: Wait for checks
+      shell: bash
+      run: |
+        echo "Waiting for all checks to pass on PR #${PR_NUMBER}..."
+        for i in {1..60}; do
+          STATUS=$(gh pr checks $PR_NUMBER --json status -q '.status')
+          echo "Current status: $STATUS"
+          if [ "$STATUS" = "completed" ]; then
+            echo "All checks completed!"
+            break
+          fi
+          sleep 10
+        done
+        
+        echo "Pull request status checks did not pass within timeout."
+        exit 1
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
+    - name: Merge pull request
+      shell: bash
+      run: |
+        gh pr merge "$PR_URL" --merge --delete-branch
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+
