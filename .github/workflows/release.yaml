@@ -77,6 +77,6 @@ jobs:
     needs: verify-version-consistency
     with:
       environment: release
-      galaxy_publish_publish: ${{ github.event.inputs.galaxy_publish }}
+      galaxy_publish: ${{ github.event.inputs.galaxy_publish }}
     secrets:
       ansible_galaxy_api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
