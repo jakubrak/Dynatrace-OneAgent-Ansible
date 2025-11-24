@@ -62,15 +62,14 @@ runs:
       shell: bash
       run: |
         gh pr create --title "Version update: $VERSION" --body "" --head "$VERSION" --base "master"
-        PR_URL=""
         for i in {1..60}; do
-          PR_JSON=$(gh pr list --head "$VERSION" --state open --json number,url --jq '.[0]')
+          PR_JSON=$(gh pr list --head "$VERSION" --state open --json number,url)
           PR_URL=$(echo "$PR_JSON" | jq -r '.[0].url')
           if [[ -n "$PR_URL" && "$PR_URL" != "null" ]]; then
             echo "Pull request created: $PR_URL"
-            echo "PR_NUMBER=$(echo "$PR_JSON" | jq -r .number)" >> "$GITHUB_ENV"
-            echo "PR_URL=$(echo "$PR_JSON" | jq -r .url)" >> "$GITHUB_ENV"
-            break
+            echo "PR_NUMBER=$(echo "$PR_JSON" | jq -r .[0].number)" >> "$GITHUB_ENV"
+            echo "PR_URL=$PR_URL" >> "$GITHUB_ENV"
+            exit 0
           fi
           echo "Waiting for pull request to be created..."
           sleep 10
@@ -91,7 +90,7 @@ runs:
           echo "Current status: $STATUS"
           if [ "$STATUS" = "completed" ]; then
             echo "All checks completed!"
-            break
+            exit 0
           fi
           sleep 10
         done
