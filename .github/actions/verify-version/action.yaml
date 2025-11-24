@@ -24,10 +24,9 @@ runs:
     - name: "Get current tag"
       shell: bash
       run: |
-        CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null)
-        if [ -z "$CURRENT_TAG" ]; then
-        echo "Error: No tag found for the current commit. Aborting version verification."
-        exit 1
+        if ! CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null); then
+          echo "Error: No tag found for the current commit. Please run the workflow on a tag, not a branch"
+          exit 1
         fi
         printf "CURRENT_TAG=%s\n" "$CURRENT_TAG" >> $GITHUB_ENV
 
