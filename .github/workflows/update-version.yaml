@@ -35,3 +35,8 @@ jobs:
         with:
           version: ${{ github.event.inputs.version }}
           gha_token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yaml
+    with:
+        ref: ${{ github.event.inputs.version }}

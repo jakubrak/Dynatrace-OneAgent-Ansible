@@ -86,11 +86,3 @@ runs:
         env:
           GH_TOKEN: ${{ inputs.gha_token }}
           VERSION: ${{ inputs.version }}
-
-      - name: Trigger Pull Request build
-        shell: bash
-        run: |
-          gh workflow run build-and-test.yaml --ref "$VERSION"
-        env:
-          GH_TOKEN: ${{ inputs.gha_token }}
-          VERSION: ${{ inputs.version }}
