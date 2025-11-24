@@ -81,29 +81,27 @@ runs:
         GH_TOKEN: ${{ inputs.gha_token }}
         VERSION: ${{ inputs.version }}
 
-    - name: Wait for checks
+    - name: Enable auto-merge
       shell: bash
       run: |
-        echo "Waiting for all checks to pass on PR #${PR_NUMBER}..."
+        gh pr merge "$PR_URL" --auto --delete-branch
+      env:
+        GH_TOKEN: ${{ inputs.gha_token }}
+
+    - name: Wait for PR to be merged
+      shell: bash
+      run: |
+        echo "Waiting for PR #${PR_NUMBER} to be merged..."
         for i in {1..60}; do
-          STATUS=$(gh pr checks $PR_NUMBER --json status -q '.status')
-          echo "Current status: $STATUS"
-          if [ "$STATUS" = "completed" ]; then
-            echo "All checks completed!"
+          STATE=$(gh pr view $PR_NUMBER --json state -q '.state')
+          if [ "$STATE" = "MERGED" ]; then
+            echo "PR merged!"
             exit 0
           fi
           sleep 10
         done
-        
-        echo "Pull request status checks did not pass within timeout."
+        echo "PR #${PR_NUMBER} was not merged within timeout."
         exit 1
-      env:
-        GH_TOKEN: ${{ inputs.gha_token }}
-
-    - name: Merge pull request
-      shell: bash
-      run: |
-        gh pr merge "$PR_URL" --merge --delete-branch
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
 
