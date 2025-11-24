@@ -26,13 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        if: ${{ inputs.github_publish }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Update version
-        if: ${{ inputs.github_publish }}
         uses:  ./.github/actions/update-version
         with:
           version: ${{ github.event.inputs.version }}
