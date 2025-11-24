@@ -24,13 +24,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Generate GitHub App token
-      id: app-token
-      uses: actions/create-github-app-token@v1
-      with:
-        app-id: ${{ secrets.APP_ID }}
-        private-key: ${{ secrets.APP_PRIVATE_KEY }}
-
     - name: Install git-conventional-commits
       shell: bash
       run: |
@@ -86,7 +79,7 @@ runs:
         echo "Pull request was not created within timeout."
         exit 1
       env:
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN: ${{ inputs.gha_token }}
         VERSION: ${{ inputs.version }}
 
     - name: Wait for checks
@@ -106,12 +99,12 @@ runs:
         echo "Pull request status checks did not pass within timeout."
         exit 1
       env:
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN: ${{ inputs.gha_token }}
 
     - name: Merge pull request
       shell: bash
       run: |
         gh pr merge "$PR_URL" --merge --delete-branch
       env:
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        GH_TOKEN: ${{ inputs.gha_token }}
 
