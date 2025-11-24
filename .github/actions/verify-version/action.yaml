@@ -14,32 +14,41 @@
 
 name: "Verify version"
 description: "Verifies version in galaxy.yml and <role_dir>/vars/main against latest tag"
-
+outputs:
+  current_tag:
+    description: "Current tag"
+    value: ${{ env.CURRENT_TAG }}
 runs:
   using: composite
   steps:
-    - name: "Get latest tag"
+    - name: "Get current tag"
       shell: bash
-      run: printf "LATEST_TAG=%s\n" "$(git describe --tags --abbrev=0 --always)" >> $GITHUB_ENV
+      run: |
+        CURRENT_TAG=$(git describe --tags --exact-match 2>/dev/null)
+        if [ -z "$CURRENT_TAG" ]; then
+        echo "Error: No tag found for the current commit. Aborting version verification."
+        exit 1
+        fi
+        printf "CURRENT_TAG=%s\n" "$CURRENT_TAG" >> $GITHUB_ENV
 
     - name: "Extract version from tag"
       shell: bash
       run: |
-        latestTag="${{ env.LATEST_TAG }}"
-        printf "LATEST_VERSION=%s\n" "${latestTag#v}" >> $GITHUB_ENV
+        currentTag="${{ env.CURRENT_TAG }}"
+        printf "CURRENT_VERSION=%s\n" "${currentTag#v}" >> $GITHUB_ENV
 
     - name: "Verify galaxy.yml version"
       shell: bash
       run: |
-        latestVersion="${{ env.LATEST_VERSION }}"
+        currentVersion="${{ env.CURRENT_VERSION }}"
         galaxyVersion="$(sed -n "s/version: \(.*\)/\1/p" galaxy.yml)"
-        printf "Latest version: %s, galaxy version: %s" "${latestVersion}" "${galaxyVersion}"
-        [ "${latestVersion}" = "${galaxyVersion}" ]
+        printf "Current version: %s, galaxy version: %s" "$currentVersion" "$galaxyVersion"
+        [ "$currentVersion" = "$galaxyVersion" ]
 
     - name: "Verify vars/main.yml version"
       shell: bash
       run: |
-        latestVersion="${{ env.LATEST_VERSION }}"
+        currentVersion="${{ env.CURRENT_VERSION }}"
         roleVersion="$(sed -n "s/oneagent_script_version: \(.*\)/\1/p" roles/oneagent/vars/version.yml)"
-        printf "Latest version: %s, role version: %s" "${latestVersion}" "${roleVersion}"
-        [ "${latestVersion}" = "${roleVersion}" ]
+        printf "Current version: %s, role version: %s" "$currentVersion" "$roleVersion"
+        [ "$currentVersion" = "$roleVersion" ]
