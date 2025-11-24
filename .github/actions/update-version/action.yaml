@@ -84,7 +84,7 @@ runs:
     - name: Enable auto-merge
       shell: bash
       run: |
-        gh pr merge "$PR_URL" --rebase --auto --delete-branch
+        gh pr merge "$PR_URL" --squash --auto --delete-branch
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
 
