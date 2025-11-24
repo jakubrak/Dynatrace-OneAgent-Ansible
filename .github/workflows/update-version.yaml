@@ -38,5 +38,6 @@ jobs:
 
   build-and-test:
     uses: ./.github/workflows/build-and-test.yaml
+    needs: update-version-and-changelog
     with:
         ref: ${{ github.event.inputs.version }}
