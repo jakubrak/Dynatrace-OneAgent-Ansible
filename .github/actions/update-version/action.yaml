@@ -105,3 +105,12 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
 
+    - name: Create version tag
+      shell: bash
+      run: |
+        git pull
+        git tag "v$VERSION"
+        git push origin "$VERSION"
+      env:
+        VERSION: ${{ inputs.version }}
+
