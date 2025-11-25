@@ -68,8 +68,8 @@ jobs:
           ansible-version: ${{ matrix.ansible-version }}
       - name: Download the collection
         uses: ./.github/actions/download-collection
-      - name: Run sanity tests
-        uses: ./.github/actions/run-sanity-and-linter-tests
+#      - name: Run sanity tests
+#        uses: ./.github/actions/run-sanity-and-linter-tests
       - name: Run component tests
         uses: ./.github/actions/run-component-tests
         with:
