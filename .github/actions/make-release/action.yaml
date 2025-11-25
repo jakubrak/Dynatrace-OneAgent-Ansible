@@ -14,8 +14,8 @@
 
 name: "Make GitHub release"
 inputs:
-  current_tag:
-    description: "Current tag"
+  version:
+    description: "Version to be released (e.g. 1.2.3)"
     required: true
   gha_token:
     descrition: "GHA bot token"
@@ -27,7 +27,7 @@ runs:
     - name: Make release
       shell: bash
       run: |
-        gh release create "$CURRENT_TAG" --notes-file CHANGELOG.md
+        gh release create "$VERSION" --notes-file CHANGELOG.md
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
-        CURRENT_TAG: ${{ inputs.current_tag }}
+        VERSION: ${{ inputs.version }}
