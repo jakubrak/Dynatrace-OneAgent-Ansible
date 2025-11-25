@@ -73,7 +73,7 @@ jobs:
   release-on-ah:
     name: Release on Automation Hub
     uses: ansible/ansible-content-actions/.github/workflows/release_ah.yaml@main
-    needs: verify-version-consistency
+    needs: update-version-and-changelog
     with:
       environment: release
       ah_publish: ${{ github.event.inputs.ah_publish }}
@@ -83,7 +83,7 @@ jobs:
   release-on-galaxy:
     name: Release on Automation Hub
     uses: ansible/ansible-content-actions/.github/workflows/release_galaxy.yaml@main
-    needs: verify-version-consistency
+    needs: update-version-and-changelog
     with:
       environment: release
       galaxy_publish: ${{ github.event.inputs.galaxy_publish }}
