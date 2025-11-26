@@ -20,10 +20,6 @@ inputs:
   gha_token:
     description: "GHA bot token"
     required: true
-outputs:
-  changelog:
-    description: "Generated changelog"
-    value: ${{ steps.generate_changelog.outputs.changelog }}
 
 runs:
   using: composite
@@ -44,14 +40,21 @@ runs:
       id: generate_changelog
       shell: bash
       run: |
-        npx git-conventional-commits changelog --file CHANGELOG_temp.md --release "$VERSION"
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        cat CHANGELOG_temp.md >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        cat CHANGELOG.md >> CHANGELOG_temp.md
-        mv CHANGELOG_temp.md CHANGELOG.md
+        npx git-conventional-commits changelog --file release-notes.md --release "$VERSION"
       env:
         VERSION: ${{ inputs.version }}
+
+    - name: Upload release notes
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-notes
+        path: release-notes.md
+
+    - name: Append release notes to changelog
+      shell: bash
+      run: |
+        cat CHANGELOG.md >> release-notes.md
+        mv release-notes.md CHANGELOG.md
 
     - name: Setup git config
       shell: bash
