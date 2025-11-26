@@ -108,9 +108,10 @@ runs:
     - name: Create version tag
       shell: bash
       run: |
-        git pull
+        git checkout master
+        git pull origin master
         git tag "v$VERSION"
-        git push origin "$VERSION"
+        git push origin "v$VERSION"
       env:
         VERSION: ${{ inputs.version }}
 
