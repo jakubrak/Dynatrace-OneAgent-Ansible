@@ -17,6 +17,9 @@ inputs:
   version:
     description: "Version to be released (e.g. 1.2.3)"
     required: true
+  changelog:
+    description: "Changelog for the release"
+    required: true
   gha_token:
     descrition: "GHA bot token"
     required: true
@@ -27,7 +30,8 @@ runs:
     - name: Make release
       shell: bash
       run: |
-        gh release create "v$VERSION" --fail-on-no-commits --notes-file CHANGELOG.md
+        echo "$CHANGELOG" | tail -n +3 | gh release create "v$VERSION" --title="$VERSION" --notes-file -
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
         VERSION: ${{ inputs.version }}
+        CHANGELOG: ${{ inputs.changelog }}

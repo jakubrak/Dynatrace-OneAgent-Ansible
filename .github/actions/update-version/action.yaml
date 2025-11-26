@@ -20,6 +20,10 @@ inputs:
   gha_token:
     description: "GHA bot token"
     required: true
+outputs:
+  changelog:
+    description: "Generated changelog"
+    value: ${{ steps.generate_changelog.outputs.changelog }}
 
 runs:
   using: composite
@@ -37,9 +41,15 @@ runs:
         VERSION: ${{ inputs.version }}
 
     - name: Generate changelog
+      id: generate_changelog
       shell: bash
       run: |
-        npx git-conventional-commits changelog --file CHANGELOG.md --release "$VERSION"
+        npx git-conventional-commits changelog --file CHANGELOG_temp.md --release "$VERSION"
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        cat CHANGELOG_temp.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        CHANGELOG.md >> CHANGELOG_temp.md
+        mv CHANGELOG_temp.md CHANGELOG.md
       env:
         VERSION: ${{ inputs.version }}
 

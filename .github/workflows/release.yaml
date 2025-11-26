@@ -67,6 +67,7 @@ jobs:
         uses: ./.github/actions/make-release
         with:
           version: ${{ inputs.version }}
+          changelog: ${{ needs.update-version-and-changelog.outputs.changelog }}
           gha_token: ${{ secrets.GITHUB_TOKEN }}
 
   release-on-ah:
