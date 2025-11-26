@@ -1,3 +1,8 @@
+## **1.2.5**&emsp;<sub><sup>2025-11-26 (78a091d5ed85bece90da305da35c929ef5a856ed...78a091d5ed85bece90da305da35c929ef5a856ed)</sup></sub>
+
+*no relevant changes*
+<br>
+
 ## **1.2.5**&emsp;<sub><sup>2025-11-26 (88d2766ba6ac7dd3371ccbcd3f7a71921c3459d2...f87dc998f35b7d038ca5e0ef0aabe0cd20fded56)</sup></sub>
 
 ### Features
