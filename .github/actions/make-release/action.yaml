@@ -27,15 +27,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Download release notes
-      uses: actions/download-artifact@v4
-      with:
-        name: release-notes
-
     - name: Make release
       shell: bash
       run: |
-        cat release-notes.md | tail -n +3 | gh release create "v$VERSION" --title="$VERSION" --notes-file -
+        python $GITHUB_WORKSPACE/.github/actions/make-release/parse_changelog.py --file "CHANGELOG.md" --version "$VERSION" | gh release create "v$VERSION" --title="$VERSION" --notes-file -
       env:
         GH_TOKEN: ${{ inputs.gha_token }}
         VERSION: ${{ inputs.version }}

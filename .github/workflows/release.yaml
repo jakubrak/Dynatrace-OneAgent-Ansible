@@ -17,8 +17,12 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to be released (e.g. 1.2.3)"
+        description: Version to be released (e.g. 1.2.3)
         required: true
+      git_changes:
+        description: Update the collection version, the changelog and create version tag
+        default: true
+        type: boolean
       ah_publish:
         description: Publish the collection on Automation Hub
         default: true
@@ -33,9 +37,10 @@ on:
         type: boolean
 
 jobs:
-  update-version-and-changelog:
+  git-changes:
     name: Update the collection version and the changelog
     runs-on: ubuntu-latest
+    if: ${{ inputs.git_changes}}
     steps:
       - name: checkout
         uses: actions/checkout@v4
