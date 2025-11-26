@@ -109,9 +109,18 @@ runs:
       shell: bash
       run: |
         git checkout master
-        git pull origin master
+        git pull --rebase origin master
         git tag "v$VERSION"
         git push origin "v$VERSION"
+      env:
+        VERSION: ${{ inputs.version }}
+
+    - name: Delete version branch
+      if: always()
+      shell: bash
+      run: |
+        git branch -D "$VERSION" || true
+        git push origin --delete "$VERSION" || true
       env:
         VERSION: ${{ inputs.version }}
 
