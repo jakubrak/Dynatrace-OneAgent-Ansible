@@ -44,7 +44,6 @@ jobs:
   git-changes:
     name: Update the collection version and the changelog
     runs-on: ubuntu-latest
-    if: ${{ inputs.git_changes}}
     steps:
       - name: checkout
         uses: actions/checkout@v4
