@@ -15,7 +15,7 @@
 name: "Update version in all needed files"
 inputs:
   version:
-    description: "Version to be set"
+    description: "Version to be released (e.g. 1.2.3)"
     required: true
   gha_token:
     description: "GHA bot token"

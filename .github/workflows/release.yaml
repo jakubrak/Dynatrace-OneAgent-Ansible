@@ -76,7 +76,7 @@ jobs:
     needs: update-version-and-changelog
     with:
       environment: release
-      ah_publish: ${{ github.event.inputs.ah_publish }}
+      ah_publish: "${{ github.event.inputs.ah_publish }}"
     secrets:
       ah_token: ${{ secrets.AH_TOKEN }}
 
@@ -86,6 +86,6 @@ jobs:
     needs: update-version-and-changelog
     with:
       environment: release
-      galaxy_publish: ${{ github.event.inputs.galaxy_publish }}
+      galaxy_publish: "${{ github.event.inputs.galaxy_publish }}"
     secrets:
       ansible_galaxy_api_key: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
