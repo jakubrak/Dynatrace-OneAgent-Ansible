@@ -48,7 +48,7 @@ runs:
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
         cat CHANGELOG_temp.md >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
-        CHANGELOG.md >> CHANGELOG_temp.md
+        cat CHANGELOG.md >> CHANGELOG_temp.md
         mv CHANGELOG_temp.md CHANGELOG.md
       env:
         VERSION: ${{ inputs.version }}
