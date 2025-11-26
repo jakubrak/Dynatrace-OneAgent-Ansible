@@ -1,3 +1,8 @@
+## **1.2.6**&emsp;<sub><sup>2025-11-26 (0066df37badddc6889e916622cfeab333a8d6667...133d13411a4f2770e36bd691c2057d2fd4c97847)</sup></sub>
+
+*no relevant changes*
+<br>
+
 ## **1.2.6**&emsp;<sub><sup>2025-11-26 (0066df37badddc6889e916622cfeab333a8d6667...b48e2745d55fd956c89482fb15ffd0727ed6ab1e)</sup></sub>
 
 *no relevant changes*
