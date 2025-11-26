@@ -41,20 +41,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Check if v${{ inputs.version }} tag exists
-        shell: bash
+      - name: Check if tag exists
+        id: check_tag
         run: |
           if git rev-parse "v${{ inputs.version }}" >/dev/null 2>&1; then
-            echo "Skipping version update as tag v${{ inputs.version }} already exists"
-            exit 0
+            echo "Tag v${{ inputs.version }} exists, skipping version update"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       - name: Generate GitHub App token
+        if: ${{ steps.check_tag.outputs.exists == 'false' }}
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Update version
+        if: ${{ steps.check_tag.outputs.exists == 'false' }}
         uses: ./.github/actions/update-version
         with:
           version: ${{ inputs.version }}
@@ -67,17 +71,22 @@ jobs:
     if: ${{ inputs.github_publish }}
     steps:
       - name: Check if GitHub Release for v${{ inputs.version }} tag exists
+        id: check_github_release
         shell: bash
         run: |
           if gh release view "v${{ inputs.version }}" >/dev/null 2>&1; then
             echo "Skipping GitHub Release as release for tag v${{ inputs.version }} already exists"
-            exit 0
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
           fi
       - name: checkout
+        if: ${{ steps.check_github_release.outputs.exists == 'false' }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Make GitHub release
+        if: ${{ steps.check_github_release.outputs.exists == 'false' }}
         uses: ./.github/actions/make-release
         with:
           version: ${{ inputs.version }}
