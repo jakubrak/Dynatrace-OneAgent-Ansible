@@ -20,11 +20,11 @@ on:
         description: Version to be released (e.g. 1.2.3)
         required: true
       update_version:
-        description: Update the collection version
+        description: Update the version in galaxy.yml and roles/oneagent/vars/version.yml
         default: true
         type: boolean
       update_changelog:
-        description: Update the changelog
+        description: Update CHANGELOG.md
         default: true
         type: boolean
       ah_publish:

@@ -33,7 +33,7 @@ runs:
     - name: Commit
       shell: bash
       run: |
-        git add galaxy.yml roles/oneagent/vars/version.yml CHANGELOG.md
+        git add -u galaxy.yml roles/oneagent/vars/version.yml CHANGELOG.md
         git commit -m "chore: Update the collection version to $VERSION"
         git push origin HEAD:"$VERSION"
       env:
