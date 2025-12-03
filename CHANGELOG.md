@@ -1,3 +1,11 @@
+## **1.2.6**&emsp;<sub><sup>2025-12-03 (cea983df0453dc5ea7e672542ffa0db3219828c2...d9761b02aaa864a0e1d5777dfa8fb95d46e54be9)</sup></sub>
+
+### Bug Fixes
+
+- Fix ansible\-linter error: variables names from within roles should use oneagent\_ as a prefix\. \(register: installer\_stat\) \(\#119\) (cea983df0453dc5ea7e672542ffa0db3219828c2)
+
+<br>
+
 ## **1.2.5**&emsp;<sub><sup>2025-11-21 (f903c8f0f8156ebfeb82a7c1638e5d94d085e47b...ab81691af95dae02a1f7cfbf644404b40edcaac6)</sup></sub>
 
 ### Features
