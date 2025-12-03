@@ -1,3 +1,18 @@
+## **1.2.6**&emsp;<sub><sup>2025-12-03 (88d2766ba6ac7dd3371ccbcd3f7a71921c3459d2...faa515428ba076e403989ba41e1356e40404a59b)</sup></sub>
+
+### Features
+
+- add retry mechanism for OneAgent installer download (79658309a21dff5f54d3758131643485a0623ac6)
+- Remove unintended config feature from the collection (5cb5d4e8f19b78ac717485b0a708e6d1b9b2bb56)
+- Add check for latest OneAgent version before download (3c7670931c7d274f365e16f1ee837acaea324009)
+
+### Bug Fixes
+
+- fix broken conditionals \(\#105\) (7cd6ee37f063e34740678455a8fcadee9cf16f54)
+- Fix ansible\-linter error: variables names from within roles should use oneagent\_ as a prefix\. \(register: installer\_stat\) \(\#119\) (cea983df0453dc5ea7e672542ffa0db3219828c2)
+
+<br>
+
 ## **1.2.5**&emsp;<sub><sup>2025-11-21 (f903c8f0f8156ebfeb82a7c1638e5d94d085e47b...ab81691af95dae02a1f7cfbf644404b40edcaac6)</sup></sub>
 
 ### Features
